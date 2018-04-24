@@ -8,8 +8,8 @@ function [J grad] = nnCostFunction(nn_params, ...
 %   [J grad] = NNCOSTFUNCTON(nn_params, hidden_layer_size, num_labels, ...
 %   X, y, lambda) computes the cost and gradient of the neural network. The
 %   parameters for the neural network are "unrolled" into the vector
-%   nn_params and need to be converted back into the weight matrices. 
-% 
+%   nn_params and need to be converted back into the weight matrices.
+%
 %   The returned parameter grad should be a "unrolled" vector of the
 %   partial derivatives of the neural network.
 %
@@ -24,8 +24,8 @@ Theta2 = reshape(nn_params((1 + (hidden_layer_size * (input_layer_size + 1))):en
 
 % Setup some useful variables
 m = size(X, 1);
-         
-% You need to return the following variables correctly 
+
+% You need to return the following variables correctly
 J = 0;
 Theta1_grad = zeros(size(Theta1));
 Theta2_grad = zeros(size(Theta2));
@@ -39,6 +39,53 @@ Theta2_grad = zeros(size(Theta2));
 %         cost function computation is correct by verifying the cost
 %         computed in ex4.m
 %
+
+A1 = [ones(m,1), X]; % add column of 1's to X
+
+% Iterate over all examples
+for i=1:m
+
+  % Forward propagate and compute costs
+  a1 = A1(i, :); % input layer example
+  fprintf('size a1');
+  size(a1)
+
+  z2 = a1 * transpose(Theta1);
+  a2 = [1, sigmoid(z2)]; % hidden layer example value
+  fprintf('size z2');
+  size(z2)
+  fprintf('size a2');
+  size(a2)
+
+  z3 = a2 * transpose(Theta2);
+  h = a3 = sigmoid(z3); % output hypothesis example value
+  fprintf('size z3');
+  size(z3)
+  fprintf('size a3');
+  size(a3)
+
+  yi = 1:num_labels == y(i); % label for example
+  J += ((-1 .* yi * log(h') - (1 .- yi) * log(1 .- h'))); % increase J by cost for current example
+  fprintf('size yi');
+  size(yi)
+
+  % Back propagate
+  d3 = (a3 - yi)';
+
+  fprintf('size d3');
+  size(d3)
+
+  d2 = Theta2(:,2:end)' * d3 .* sigmoidGradient(z2');
+
+  fprintf('size d2');
+  size(d2)
+endfor
+
+J /= m; % average J across examples
+
+% add regularization term to J.
+J += (lambda / (2 * m)) * (sum(Theta1(:,2:end)(:) .^ 2) + sum(Theta2(:,2:end)(:) .^ 2));
+
 % Part 2: Implement the backpropagation algorithm to compute the gradients
 %         Theta1_grad and Theta2_grad. You should return the partial derivatives of
 %         the cost function with respect to Theta1 and Theta2 in Theta1_grad and
@@ -46,12 +93,12 @@ Theta2_grad = zeros(size(Theta2));
 %         that your implementation is correct by running checkNNGradients
 %
 %         Note: The vector y passed into the function is a vector of labels
-%               containing values from 1..K. You need to map this vector into a 
+%               containing values from 1..K. You need to map this vector into a
 %               binary vector of 1's and 0's to be used with the neural network
 %               cost function.
 %
 %         Hint: We recommend implementing backpropagation using a for-loop
-%               over the training examples if you are implementing it for the 
+%               over the training examples if you are implementing it for the
 %               first time.
 %
 % Part 3: Implement regularization with the cost function and gradients.
