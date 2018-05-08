@@ -42,44 +42,53 @@ Theta2_grad = zeros(size(Theta2));
 
 A1 = [ones(m,1), X]; % add column of 1's to X
 
+% Initialize gradient matrices
+Delta2 = zeros(num_labels, hidden_layer_size + 1);
+Delta1 = zeros(hidden_layer_size, input_layer_size + 1);
+
 % Iterate over all examples
 for i=1:m
 
   % Forward propagate and compute costs
   a1 = A1(i, :); % input layer example
-  fprintf('size a1');
-  size(a1)
 
   z2 = a1 * transpose(Theta1);
   a2 = [1, sigmoid(z2)]; % hidden layer example value
-  fprintf('size z2');
-  size(z2)
-  fprintf('size a2');
-  size(a2)
 
   z3 = a2 * transpose(Theta2);
   h = a3 = sigmoid(z3); % output hypothesis example value
-  fprintf('size z3');
-  size(z3)
-  fprintf('size a3');
-  size(a3)
 
   yi = 1:num_labels == y(i); % label for example
   J += ((-1 .* yi * log(h') - (1 .- yi) * log(1 .- h'))); % increase J by cost for current example
-  fprintf('size yi');
-  size(yi)
 
-  % Back propagate
+  % Back Propagate: Calculate error terms
   d3 = (a3 - yi)';
-
-  fprintf('size d3');
-  size(d3)
-
   d2 = Theta2(:,2:end)' * d3 .* sigmoidGradient(z2');
 
-  fprintf('size d2');
-  size(d2)
+  % fprintf('size d3: \n');
+  % size(d3)
+  % fprintf('size a2: \n');
+  % size(a2)
+  % fprintf('size d3 * a2: \n');
+  % size(d3 * a2)
+  %
+  % fprintf('size d2: \n');
+  % size(d2)
+  % fprintf('size a1: \n');
+  % size(a1)
+  % fprintf('size d2 * a1: \n');
+  % size(d2 * a1)
+
+  % Back Propagate: Accumulate gradients
+  Delta2 = Delta2 + d3 * a2;
+  Delta1 = Delta1 + d2 * a1;
+
 endfor
+
+Theta2_grad = (Delta2 ./ m) + ...
+              (lambda / m) * [zeros(num_labels,1),Theta2(:,2:end)];
+Theta1_grad = Delta1 ./ m + ...
+              (lambda / m) * [zeros(hidden_layer_size,1),Theta1(:,2:end)];
 
 J /= m; % average J across examples
 
