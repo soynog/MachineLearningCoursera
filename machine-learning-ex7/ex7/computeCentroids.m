@@ -28,7 +28,8 @@ centroids = zeros(K, n);
 for i=1:K
   points = idx == i;  % the points x assigned to this centroid
   C = X(points',:);   % set of points assigned to centroid i
-  centroids(i, :) = (1 / max(length(C),1)) * sum(C); % set ith row of centroids to the average of the points assigned to it
+  % centroids(i, :) = (1 / max(length(C),1)) * sum(C); % set ith row of centroids to the average of the points assigned to it
+  centroids(i, :) = (1 / max(size(C, 1),1)) * sum(C); % set ith row of centroids to the average of the points assigned to it
 end
 
 
