@@ -26,8 +26,10 @@ for i = 1:m % iterate through each row of X
   x = X(i,:); % take the ith row of X
   dist = norm(x - centroids, "rows") .^ 2; % build a vector of the...
                                            % distance from x to each centroid
-  idx(i) = find(dist == min(dist)); % find the index of the shortest...
-                                    % distance and store this in index
+
+  ind = find(dist == min(dist));
+  idx(i) = ind(1); % find the index of the shortest...
+                   % distance and store this in index (take first minimum)
 end
 
 
